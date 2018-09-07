@@ -71,6 +71,7 @@ public class ConnectableDevice implements DeviceServiceListener {
     // @cond INTERNAL
     public static final String KEY_ID = "id";
     public static final String KEY_LAST_IP = "lastKnownIPAddress";
+    public static final String KEY_GROUP_INFO = "groupInfo";
     public static final String KEY_FRIENDLY = "friendlyName";
     public static final String KEY_MODEL_NAME = "modelName";
     public static final String KEY_MODEL_NUMBER = "modelNumber";
@@ -81,6 +82,7 @@ public class ConnectableDevice implements DeviceServiceListener {
 
     private String ipAddress;
     private String friendlyName;
+    private String groupInfo;
     private String modelName;
     private String modelNumber;
 
@@ -110,6 +112,7 @@ public class ConnectableDevice implements DeviceServiceListener {
         this.friendlyName = friendlyName;
         this.modelName = modelName;
         this.modelNumber = modelNumber;
+        this.groupInfo = "N\\A";
     }
 
     public ConnectableDevice(ServiceDescription description) {
@@ -660,8 +663,12 @@ public class ConnectableDevice implements DeviceServiceListener {
     }
 
     /** Gets the Current IP address of the ConnectableDevice. */
-    public String getIpAddress() {
-        return ipAddress;
+    public String getIpAddress() { return ipAddress; }
+
+    public String getGroupInfo() { return groupInfo; }
+
+    public void setGroupInfo(String groupInfo) {
+        this.groupInfo = groupInfo;
     }
 
     /**
@@ -824,6 +831,7 @@ public class ConnectableDevice implements DeviceServiceListener {
         try {
             deviceObject.put(KEY_ID, getId());
             deviceObject.put(KEY_LAST_IP, getIpAddress());
+            deviceObject.put(KEY_GROUP_INFO, getGroupInfo());
             deviceObject.put(KEY_FRIENDLY, getFriendlyName());
             deviceObject.put(KEY_MODEL_NAME, getModelName());
             deviceObject.put(KEY_MODEL_NUMBER, getModelNumber());

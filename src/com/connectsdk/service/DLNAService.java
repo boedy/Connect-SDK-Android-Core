@@ -138,7 +138,7 @@ public class DLNAService extends DeviceService implements PlaylistControl, Media
     }
 
     public static DiscoveryFilter discoveryFilter() {
-        return new DiscoveryFilter(ID, "urn:schemas-upnp-org:device:MediaRenderer:1");
+        return new DiscoveryFilter(ID, "urn:smartspeaker-audio:service:SpeakerGroup:1");
     }
 
     @Override
@@ -175,6 +175,7 @@ public class DLNAService extends DeviceService implements PlaylistControl, Media
                     serviceList.get(i).baseURL += "/";
                 }
 
+                avTransportURL = serviceList.get(i).baseURL + "MediaRenderer/AVTransport/Control";
                 if (serviceList.get(i).serviceType.contains(AV_TRANSPORT)) {
                     avTransportURL = makeControlURL(serviceList.get(i).baseURL, serviceList.get(i).controlURL);
                 }

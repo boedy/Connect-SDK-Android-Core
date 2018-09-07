@@ -32,6 +32,7 @@ public class ServiceDescription implements Cloneable {
 
     public static final String KEY_FILTER = "filter";
     public static final String KEY_IP_ADDRESS = "ipAddress";
+    public static final String KEY_GROUP_INFO= "groupInfo";
     public static final String KEY_UUID = "uuid";
     public static final String KEY_FRIENDLY = "friendlyName";
     public static final String KEY_MODEL_NAME = "modelName";
@@ -42,6 +43,7 @@ public class ServiceDescription implements Cloneable {
 
     String UUID;
     String ipAddress;
+    String groupInfo;
     String friendlyName;
     String modelName;
     String modelNumber;
@@ -66,11 +68,13 @@ public class ServiceDescription implements Cloneable {
         this.serviceFilter = serviceFilter;
         this.UUID = UUID;
         this.ipAddress = ipAddress;
+        this.groupInfo = "N\\A";
     }
 
     public ServiceDescription(JSONObject json) {
         serviceFilter = json.optString(KEY_FILTER, null);
         ipAddress = json.optString(KEY_IP_ADDRESS, null);
+        groupInfo = json.optString(KEY_GROUP_INFO, null);
         UUID = json.optString(KEY_UUID, null);
         friendlyName = json.optString(KEY_FRIENDLY, null);
         modelName = json.optString(KEY_MODEL_NAME, null);
@@ -98,6 +102,13 @@ public class ServiceDescription implements Cloneable {
 
     public void setUUID(String uUID) {
         UUID = uUID;
+    }
+
+    public void setGroupInfo(String groupInfo) {
+        this.groupInfo = groupInfo; }
+
+    public String getGroupInfo() {
+        return groupInfo;
     }
 
     public String getIpAddress() {
@@ -234,6 +245,7 @@ public class ServiceDescription implements Cloneable {
         try {
             jsonObj.putOpt(KEY_FILTER, serviceFilter);
             jsonObj.putOpt(KEY_IP_ADDRESS, ipAddress);
+            jsonObj.putOpt(KEY_GROUP_INFO, groupInfo);
             jsonObj.putOpt(KEY_UUID, UUID);
             jsonObj.putOpt(KEY_FRIENDLY, friendlyName);
             jsonObj.putOpt(KEY_MODEL_NAME, modelName);
@@ -255,6 +267,7 @@ public class ServiceDescription implements Cloneable {
         // we can ignore all these NullPointerExceptions, it's OK if those properties don't have values
         try { service.setServiceID(this.serviceID); } catch (NullPointerException ex) { }
         try { service.setIpAddress(this.ipAddress); } catch (NullPointerException ex) { }
+        try { service.setGroupInfo(this.groupInfo); } catch (NullPointerException ex) { }
         try { service.setUUID(this.UUID); } catch (NullPointerException ex) { }
         try { service.setVersion(this.version); } catch (NullPointerException ex) { }
         try { service.setFriendlyName(this.friendlyName); } catch (NullPointerException ex) { }
@@ -270,4 +283,5 @@ public class ServiceDescription implements Cloneable {
 
         return service;
     }
+
 }

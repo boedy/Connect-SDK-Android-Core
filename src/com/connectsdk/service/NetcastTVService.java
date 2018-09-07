@@ -155,7 +155,8 @@ public class NetcastTVService extends DeviceService implements Launcher, MediaCo
     }
 
     public static DiscoveryFilter discoveryFilter() {
-        return new DiscoveryFilter(ID, "urn:schemas-upnp-org:device:MediaRenderer:1");
+        //TODO disable netcast entirely
+        return new DiscoveryFilter(ID, "urn:schemas-upnp-org:device:MediaRenderer:1-not");
     }
 
     @Override

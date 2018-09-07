@@ -138,7 +138,7 @@ public class DLNAService extends DeviceService implements PlaylistControl, Media
     }
 
     public static DiscoveryFilter discoveryFilter() {
-        return new DiscoveryFilter(ID, "urn:schemas-upnp-org:device:MediaRenderer:1");
+        return new DiscoveryFilter(ID, "urn:smartspeaker-audio:service:SpeakerGroup:1");
     }
 
     @Override

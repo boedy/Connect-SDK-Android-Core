@@ -64,7 +64,7 @@ public class SSDPClient {
     InetAddress localInAddress;
 
     int timeout = 0;
-    static int MX = 5;
+    static int MX = 10;
 
     public SSDPClient(InetAddress source) throws IOException {
         this(source, new MulticastSocket(PORT), new DatagramSocket(null));

@@ -302,7 +302,6 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
             return;
 
         String usnKey = ssdpPacket.getData().get("USN");
-
         if (usnKey == null || usnKey.length() == 0)
             return;
 
@@ -335,6 +334,9 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
             if (isNew) {
                 foundService = new ServiceDescription();
                 foundService.setUUID(uuid);
+                if(ssdpPacket.getData().containsKey("GROUPINFO.SMARTSPEAKER.AUDIO")){
+                    foundService.setGroupInfo(ssdpPacket.getData().get("GROUPINFO.SMARTSPEAKER.AUDIO"));
+                }
                 foundService.setServiceFilter(serviceFilter);
                 foundService.setIpAddress(ssdpPacket.getDatagramPacket().getAddress().getHostAddress());
                 foundService.setPort(3001);
@@ -470,7 +472,6 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
     public boolean isSearchingForFilter(String filter) {
         for (DiscoveryFilter serviceFilter : serviceFilters) {
             String ssdpFilter = serviceFilter.getServiceFilter();
-
             if (ssdpFilter.equals(filter))
                 return true;
         }

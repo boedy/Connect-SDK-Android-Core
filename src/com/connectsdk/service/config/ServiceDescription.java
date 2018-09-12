@@ -43,6 +43,7 @@ public class ServiceDescription implements Cloneable {
 
     String UUID;
     String ipAddress;
+    String configId;
     String groupInfo;
     String friendlyName;
     String modelName;
@@ -68,7 +69,6 @@ public class ServiceDescription implements Cloneable {
         this.serviceFilter = serviceFilter;
         this.UUID = UUID;
         this.ipAddress = ipAddress;
-        this.groupInfo = "N\\A";
     }
 
     public ServiceDescription(JSONObject json) {
@@ -102,6 +102,14 @@ public class ServiceDescription implements Cloneable {
 
     public void setUUID(String uUID) {
         UUID = uUID;
+    }
+
+    public String getConfigId() {
+        return configId;
+    }
+
+    public void setConfigId(String configId) {
+        this.configId = configId;
     }
 
     public void setGroupInfo(String groupInfo) {

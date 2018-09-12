@@ -325,18 +325,21 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
 
             if (location == null || location.length() == 0)
                 return;
+            
+            String groupInfo = ssdpPacket.getData().get("GROUPINFO.SMARTSPEAKER.AUDIO");
+            String configId = ssdpPacket.getData().get("CONFIGID.UPNP.ORG");
 
             ServiceDescription foundService = foundServices.get(uuid);
             ServiceDescription discoverdService = discoveredServices.get(uuid);
 
             boolean isNew = foundService == null && discoverdService == null;
+            boolean isUpdated = ! isNew && ! foundService.getConfigId().equals(configId);
 
-            if (isNew) {
+            if (isNew || isUpdated ) {
                 foundService = new ServiceDescription();
                 foundService.setUUID(uuid);
-                if(ssdpPacket.getData().containsKey("GROUPINFO.SMARTSPEAKER.AUDIO")){
-                    foundService.setGroupInfo(ssdpPacket.getData().get("GROUPINFO.SMARTSPEAKER.AUDIO"));
-                }
+                foundService.setConfigId(configId);
+                foundService.setGroupInfo(groupInfo);
                 foundService.setServiceFilter(serviceFilter);
                 foundService.setIpAddress(ssdpPacket.getDatagramPacket().getAddress().getHostAddress());
                 foundService.setPort(3001);

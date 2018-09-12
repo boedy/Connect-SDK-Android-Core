@@ -33,6 +33,8 @@ public class ServiceDescription implements Cloneable {
     public static final String KEY_FILTER = "filter";
     public static final String KEY_IP_ADDRESS = "ipAddress";
     public static final String KEY_GROUP_INFO= "groupInfo";
+    public static final String KEY_WEBSOCKET_URL= "websocketUrl";
+    public static final String KEY_HOUSEHOLD_ID= "householdId";
     public static final String KEY_UUID = "uuid";
     public static final String KEY_FRIENDLY = "friendlyName";
     public static final String KEY_MODEL_NAME = "modelName";
@@ -43,8 +45,13 @@ public class ServiceDescription implements Cloneable {
 
     String UUID;
     String ipAddress;
+
+    // Sonos specific
     String configId;
     String groupInfo;
+    String websocketUrl;
+    String householdId;
+
     String friendlyName;
     String modelName;
     String modelNumber;
@@ -75,6 +82,8 @@ public class ServiceDescription implements Cloneable {
         serviceFilter = json.optString(KEY_FILTER, null);
         ipAddress = json.optString(KEY_IP_ADDRESS, null);
         groupInfo = json.optString(KEY_GROUP_INFO, null);
+        householdId = json.optString(KEY_HOUSEHOLD_ID, null);
+        websocketUrl = json.optString(KEY_WEBSOCKET_URL, null);
         UUID = json.optString(KEY_UUID, null);
         friendlyName = json.optString(KEY_FRIENDLY, null);
         modelName = json.optString(KEY_MODEL_NAME, null);
@@ -117,6 +126,22 @@ public class ServiceDescription implements Cloneable {
 
     public String getGroupInfo() {
         return groupInfo;
+    }
+
+    public String getWebsocketUrl() {
+        return websocketUrl;
+    }
+
+    public void setWebsocketUrl(String websocketUrl) {
+        this.websocketUrl = websocketUrl;
+    }
+
+    public String getHouseholdId() {
+        return householdId;
+    }
+
+    public void setHouseholdId(String householdId) {
+        this.householdId = householdId;
     }
 
     public String getIpAddress() {
@@ -254,6 +279,8 @@ public class ServiceDescription implements Cloneable {
             jsonObj.putOpt(KEY_FILTER, serviceFilter);
             jsonObj.putOpt(KEY_IP_ADDRESS, ipAddress);
             jsonObj.putOpt(KEY_GROUP_INFO, groupInfo);
+            jsonObj.putOpt(KEY_WEBSOCKET_URL, websocketUrl);
+            jsonObj.putOpt(KEY_HOUSEHOLD_ID, householdId);
             jsonObj.putOpt(KEY_UUID, UUID);
             jsonObj.putOpt(KEY_FRIENDLY, friendlyName);
             jsonObj.putOpt(KEY_MODEL_NAME, modelName);
@@ -276,6 +303,8 @@ public class ServiceDescription implements Cloneable {
         try { service.setServiceID(this.serviceID); } catch (NullPointerException ex) { }
         try { service.setIpAddress(this.ipAddress); } catch (NullPointerException ex) { }
         try { service.setGroupInfo(this.groupInfo); } catch (NullPointerException ex) { }
+        try { service.setHouseholdId(this.householdId); } catch (NullPointerException ex) { }
+        try { service.setWebsocketUrl(this.websocketUrl); } catch (NullPointerException ex) { }
         try { service.setUUID(this.UUID); } catch (NullPointerException ex) { }
         try { service.setVersion(this.version); } catch (NullPointerException ex) { }
         try { service.setFriendlyName(this.friendlyName); } catch (NullPointerException ex) { }

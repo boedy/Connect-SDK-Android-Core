@@ -72,6 +72,8 @@ public class ConnectableDevice implements DeviceServiceListener {
     public static final String KEY_ID = "id";
     public static final String KEY_LAST_IP = "lastKnownIPAddress";
     public static final String KEY_GROUP_INFO = "groupInfo";
+    public static final String KEY_WEBSOCKET_URL= "websocketUrl";
+    public static final String KEY_HOUSEHOLD_ID= "householdId";
     public static final String KEY_FRIENDLY = "friendlyName";
     public static final String KEY_MODEL_NAME = "modelName";
     public static final String KEY_MODEL_NUMBER = "modelNumber";
@@ -82,7 +84,12 @@ public class ConnectableDevice implements DeviceServiceListener {
 
     private String ipAddress;
     private String friendlyName;
+
+    // Sonos specific
     private String groupInfo;
+    private String websocketUrl;
+    private String householdId;
+
     private String modelName;
     private String modelNumber;
 
@@ -112,7 +119,6 @@ public class ConnectableDevice implements DeviceServiceListener {
         this.friendlyName = friendlyName;
         this.modelName = modelName;
         this.modelNumber = modelNumber;
-        this.groupInfo = "N\\A";
     }
 
     public ConnectableDevice(ServiceDescription description) {
@@ -671,6 +677,22 @@ public class ConnectableDevice implements DeviceServiceListener {
         this.groupInfo = groupInfo;
     }
 
+    public String getWebsocketUrl() {
+        return websocketUrl;
+    }
+
+    public void setWebsocketUrl(String websocketUrl) {
+        this.websocketUrl = websocketUrl;
+    }
+
+    public String getHouseholdId() {
+        return householdId;
+    }
+
+    public void setHouseholdId(String householdId) {
+        this.householdId = householdId;
+    }
+
     /**
      * Sets an estimate of the ConnectableDevice's current friendly name.
      * 
@@ -832,6 +854,8 @@ public class ConnectableDevice implements DeviceServiceListener {
             deviceObject.put(KEY_ID, getId());
             deviceObject.put(KEY_LAST_IP, getIpAddress());
             deviceObject.put(KEY_GROUP_INFO, getGroupInfo());
+            deviceObject.put(KEY_WEBSOCKET_URL, getWebsocketUrl());
+            deviceObject.put(KEY_HOUSEHOLD_ID, getHouseholdId());
             deviceObject.put(KEY_FRIENDLY, getFriendlyName());
             deviceObject.put(KEY_MODEL_NAME, getModelName());
             deviceObject.put(KEY_MODEL_NUMBER, getModelNumber());

@@ -744,6 +744,8 @@ public class DiscoveryManager implements ConnectableDeviceListener, DiscoveryPro
         device.setFriendlyName(serviceDescription.getFriendlyName());
         device.setLastDetection(Util.getTime());
         device.setGroupInfo(serviceDescription.getGroupInfo());
+        device.setWebsocketUrl(serviceDescription.getWebsocketUrl());
+        device.setHouseholdId(serviceDescription.getHouseholdId());
         device.setLastKnownIPAddress(serviceDescription.getIpAddress());
         //  TODO: Implement the currentSSID Property in DiscoveryManager
 //        device.setLastSeenOnWifi(currentSSID);

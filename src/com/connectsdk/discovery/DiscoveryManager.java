@@ -584,6 +584,10 @@ public class DiscoveryManager implements ConnectableDeviceListener, DiscoveryPro
 
         mSearching = false;
 
+        //clear all found devices on stop
+        for (DiscoveryProvider provider : discoveryProviders) {
+            provider.reset();
+        }
         for (DiscoveryProvider provider : discoveryProviders) {
             provider.stop();
         }

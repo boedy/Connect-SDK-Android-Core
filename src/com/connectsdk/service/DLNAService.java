@@ -175,6 +175,7 @@ public class DLNAService extends DeviceService implements PlaylistControl, Media
                     serviceList.get(i).baseURL += "/";
                 }
 
+                avTransportURL = serviceList.get(i).baseURL + "MediaRenderer/AVTransport/Control";
                 if (serviceList.get(i).serviceType.contains(AV_TRANSPORT)) {
                     avTransportURL = makeControlURL(serviceList.get(i).baseURL, serviceList.get(i).controlURL);
                 }
@@ -869,7 +870,7 @@ public class DLNAService extends DeviceService implements PlaylistControl, Media
         capabilities.add(PlayState);
         capabilities.add(PlayState_Subscribe);
 
-        // for supporting legacy apps. it might be removed in future releases  
+        // for supporting legacy apps. it might be removed in future releases
         capabilities.add(MediaControl.Next);
         capabilities.add(MediaControl.Previous);
 

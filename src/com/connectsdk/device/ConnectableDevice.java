@@ -80,6 +80,8 @@ public class ConnectableDevice implements DeviceServiceListener {
     public static final String KEY_LAST_SEEN = "lastSeenOnWifi";
     public static final String KEY_LAST_CONNECTED = "lastConnected";
     public static final String KEY_LAST_DETECTED = "lastDetection";
+    public static final String KEY_HOUSEHOLD_ID = "householdId";
+    public static final String KEY_WEBSOCKET_URL = "websocketUrl";
     public static final String KEY_SERVICES = "services";
 
     private String ipAddress;
@@ -87,6 +89,8 @@ public class ConnectableDevice implements DeviceServiceListener {
     private String groupInfo;
     private String modelName;
     private String modelNumber;
+    private String householdId;
+    private String websocketUrl;
 
     private String lastKnownIPAddress;
     private String lastSeenOnWifi;
@@ -119,6 +123,8 @@ public class ConnectableDevice implements DeviceServiceListener {
         this.modelName = modelName;
         this.modelNumber = modelNumber;
         this.groupInfo = "N\\A";
+        this.householdId = "N\\A";
+        this.websocketUrl = "N\\A";
     }
 
     public ConnectableDevice(ServiceDescription description) {
@@ -707,6 +713,14 @@ public class ConnectableDevice implements DeviceServiceListener {
         this.groupInfo = groupInfo;
     }
 
+    public void setHouseholdId(String householdId) { this.householdId = householdId; }
+
+    public String getKeyHouseholdId() { return householdId; }
+
+    public void setWebsocketUrl(String websocketUrl) { this.websocketUrl = websocketUrl;}
+
+    public String getWebsocketUrl() { return websocketUrl; }
+
     /**
      * Sets an estimate of the ConnectableDevice's current friendly name.
      * 
@@ -874,6 +888,8 @@ public class ConnectableDevice implements DeviceServiceListener {
             deviceObject.put(KEY_LAST_SEEN, getLastSeenOnWifi());
             deviceObject.put(KEY_LAST_CONNECTED, getLastConnected());
             deviceObject.put(KEY_LAST_DETECTED, getLastDetection());
+            deviceObject.put(KEY_HOUSEHOLD_ID, householdId);
+            deviceObject.put(KEY_WEBSOCKET_URL, websocketUrl);
 
             JSONObject jsonServices = new JSONObject();
             for (DeviceService service: services.values()) {

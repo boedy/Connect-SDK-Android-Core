@@ -40,6 +40,9 @@ public class ServiceDescription implements Cloneable {
     public static final String KEY_PORT = "port";
     public static final String KEY_VERSION = "version";
     public static final String KEY_SERVICE_ID = "serviceId";
+    public static final String KEY_HOUSEHOLD_ID = "householdId";
+    public static final String KEY_WEBSOCKET_URL = "websocketUrl";
+
 
     String UUID;
     String ipAddress;
@@ -58,6 +61,8 @@ public class ServiceDescription implements Cloneable {
     String serviceURI;
     Map<String, List<String>> responseHeaders;
     String serviceID;
+    String householdID;
+    String websocketURL;
     Object device;
 
     long lastDetection = Long.MAX_VALUE;
@@ -69,6 +74,8 @@ public class ServiceDescription implements Cloneable {
         this.UUID = UUID;
         this.ipAddress = ipAddress;
         this.groupInfo = "N\\A";
+        this.householdID = "N\\A";
+        this.websocketURL = "N\\A";
     }
 
     public ServiceDescription(JSONObject json) {
@@ -82,6 +89,8 @@ public class ServiceDescription implements Cloneable {
         port = json.optInt(KEY_PORT, -1);
         version = json.optString(KEY_VERSION, null);
         serviceID = json.optString(KEY_SERVICE_ID, null);
+        householdID = json.optString(KEY_HOUSEHOLD_ID, null);
+        websocketURL = json.optString(KEY_WEBSOCKET_URL, null);
     }
 
     public static ServiceDescription getDescription(JSONObject json) {
@@ -239,6 +248,14 @@ public class ServiceDescription implements Cloneable {
         this.device = device;
     }
 
+    public void setHouseholdID(String householdID) { this.householdID = householdID; }
+
+    public String getHouseholdID() { return householdID; }
+
+    public void setWebsocketURL(String websocketURL) { this.websocketURL = websocketURL;}
+
+    public String getWebsocketURL() { return websocketURL; }
+
     public JSONObject toJSONObject() {
         JSONObject jsonObj = new JSONObject();
 
@@ -253,6 +270,8 @@ public class ServiceDescription implements Cloneable {
             jsonObj.putOpt(KEY_PORT, port);
             jsonObj.putOpt(KEY_VERSION, version);
             jsonObj.putOpt(KEY_SERVICE_ID, serviceID);
+            jsonObj.putOpt(KEY_HOUSEHOLD_ID, householdID);
+            jsonObj.putOpt(KEY_WEBSOCKET_URL, websocketURL);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -280,6 +299,8 @@ public class ServiceDescription implements Cloneable {
         try { service.setResponseHeaders(this.responseHeaders); } catch (NullPointerException ex) { }
         try { service.setServiceList(this.serviceList); } catch (NullPointerException ex) { }
         try { service.setServiceFilter(this.serviceFilter); } catch (NullPointerException ex) { }
+        try { service.setHouseholdID(this.householdID); } catch (NullPointerException ex) { }
+        try { service.setWebsocketURL(this.websocketURL); } catch (NullPointerException ex) { }
 
         return service;
     }

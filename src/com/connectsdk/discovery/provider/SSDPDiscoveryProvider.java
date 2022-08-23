@@ -327,6 +327,8 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
                 return;
             
             String groupInfo = ssdpPacket.getData().get("GROUPINFO.SMARTSPEAKER.AUDIO");
+            String householdID = ssdpPacket.getData().get("HOUSEHOLD.SMARTSPEAKER.AUDIO");
+            String websocketURL = ssdpPacket.getData().get("WEBSOCK.SMARTSPEAKER.AUDIO");
 
             ServiceDescription foundService = foundServices.get(uuid);
             ServiceDescription discoverdService = discoveredServices.get(uuid);
@@ -337,9 +339,9 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
             if (isNew || isUpdated ) {
                 foundService = new ServiceDescription();
                 foundService.setUUID(uuid);
-                if(groupInfo != null){
-                    foundService.setGroupInfo(groupInfo);
-                }
+                if(groupInfo != null) foundService.setGroupInfo(groupInfo);
+                if(householdID != null) foundService.setHouseholdID(householdID);
+                if(websocketURL != null) foundService.setWebsocketURL(websocketURL);
                 foundService.setServiceFilter(serviceFilter);
                 foundService.setIpAddress(ssdpPacket.getDatagramPacket().getAddress().getHostAddress());
                 foundService.setPort(3001);

@@ -229,7 +229,7 @@ public class MirroringService extends Service {
 
         Logger.print("executeStart");
         start(intent, connectionListener);
-        if (com.connectsdk.BuildConfig.DEBUG == true) AppUtil.showToastLong(this, "########## DEBUG version ##########");
+//         if (com.connectsdk.BuildConfig.DEBUG == true) AppUtil.showToastLong(this, "########## DEBUG version ##########");
     }
 
     private void executeStop() {

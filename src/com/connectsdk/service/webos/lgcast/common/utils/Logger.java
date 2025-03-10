@@ -14,7 +14,8 @@ public class Logger {
     private static final String TAG = "LGCAST";
     private static ScrollView mScrollView = null;
     private static TextView mTextView = null;
-    private static boolean mShowDebug = com.connectsdk.BuildConfig.DEBUG;
+//     private static boolean mShowDebug = com.connectsdk.BuildConfig.DEBUG;
+    private static boolean mShowDebug = false;
 
     public static void setView(ScrollView scrollView, TextView textView) {
         mScrollView = scrollView;

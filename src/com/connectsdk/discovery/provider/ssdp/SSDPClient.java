@@ -35,6 +35,7 @@ public class SSDPClient {
     public static final String NEWLINE = "\r\n";
 
     public static final String MULTICAST_ADDRESS = "239.255.255.250";
+    public static final String BROADCAST_ADDRESS = "255.255.255.255";
     public static final int PORT = 1900;
 
     /* Definitions of start line */
@@ -80,12 +81,23 @@ public class SSDPClient {
         multicastSocket.joinGroup(multicastGroup, networkInterface);
 
         datagramSocket.setReuseAddress(true);
+        datagramSocket.setBroadcast(true);
         datagramSocket.bind(new InetSocketAddress(localInAddress, 0));
     }
 
     /** Used to send SSDP packet */
     public void send(String data) throws IOException {
         DatagramPacket dp = new DatagramPacket(data.getBytes(), data.length(), multicastGroup);
+
+        datagramSocket.send(dp);
+    }
+
+    /** Used to send SSDP packet as a broadcast message */
+    public void sendBroadcast(String data) throws IOException {
+        DatagramPacket dp = new DatagramPacket(
+                data.getBytes(),
+                data.length(),
+                new InetSocketAddress(BROADCAST_ADDRESS, PORT));
 
         datagramSocket.send(dp);
     }

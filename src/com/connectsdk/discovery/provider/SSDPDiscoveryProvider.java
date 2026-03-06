@@ -51,6 +51,10 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.ParserConfigurationException;
 
 public class SSDPDiscoveryProvider implements DiscoveryProvider {
+    private static final String SONOS_GROUP_DESCRIPTION = "group_description";
+    private static final String SONOS_DEVICE_DESCRIPTION = "device_description";
+    private static final String UNKNOWN_GROUP_INFO = "N\\A";
+
     Context context;
 
     boolean needToStartSearch = false;
@@ -205,8 +209,10 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
                     @Override
                     public void run() {
                         try {
-                            if (ssdpClient != null)
+                            if (ssdpClient != null) {
                                 ssdpClient.send(message);
+                                ssdpClient.sendBroadcast(message);
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -321,7 +327,7 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
                 notifyListenersOfLostService(service);
             }
         } else {
-            String location = ssdpPacket.getData().get("LOCATION");
+            String location = normalizeLocation(ssdpPacket.getData().get("LOCATION"));
 
             if (location == null || location.length() == 0)
                 return;
@@ -331,10 +337,11 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
             String websocketURL = ssdpPacket.getData().get("WEBSOCK.SMARTSPEAKER.AUDIO");
 
             ServiceDescription foundService = foundServices.get(uuid);
-            ServiceDescription discoverdService = discoveredServices.get(uuid);
+            ServiceDescription discoveredService = discoveredServices.get(uuid);
+            ServiceDescription existingService = foundService != null ? foundService : discoveredService;
 
-            boolean isNew = foundService == null && discoverdService == null;
-            boolean isUpdated = ! isNew && ! foundService.getGroupInfo().equals(groupInfo);
+            boolean isNew = existingService == null;
+            boolean isUpdated = !isNew && isGroupInfoChanged(existingService.getGroupInfo(), groupInfo);
 
             if (isNew || isUpdated ) {
                 foundService = new ServiceDescription();
@@ -349,6 +356,8 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
                 discoveredServices.put(uuid, foundService);
 
                 getLocationData(location, uuid, serviceFilter);
+            } else {
+                foundService = existingService;
             }
 
             if (foundService != null)
@@ -482,6 +491,33 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
         }
 
         return false;
+    }
+
+    private boolean isGroupInfoChanged(String currentGroupInfo, String incomingGroupInfo) {
+        String normalizedCurrent = normalizeGroupInfo(currentGroupInfo);
+        String normalizedIncoming = normalizeGroupInfo(incomingGroupInfo);
+
+        if (normalizedCurrent == null) {
+            return normalizedIncoming != null;
+        }
+
+        return !normalizedCurrent.equals(normalizedIncoming);
+    }
+
+    private String normalizeGroupInfo(String groupInfo) {
+        if (groupInfo == null || groupInfo.length() == 0 || UNKNOWN_GROUP_INFO.equals(groupInfo)) {
+            return null;
+        }
+
+        return groupInfo;
+    }
+
+    private String normalizeLocation(String location) {
+        if (location == null) {
+            return null;
+        }
+
+        return location.replace(SONOS_GROUP_DESCRIPTION, SONOS_DEVICE_DESCRIPTION);
     }
 
     public boolean containsServicesWithFilter(SSDPDevice device, String filter) {

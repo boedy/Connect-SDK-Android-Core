@@ -65,7 +65,7 @@ public class SSDPClient {
     InetAddress localInAddress;
 
     int timeout = 0;
-    static int MX = 10;
+    static int MX = 1;
 
     public SSDPClient(InetAddress source) throws IOException {
         this(source, new MulticastSocket(PORT), new DatagramSocket(null));
@@ -105,7 +105,7 @@ public class SSDPClient {
 
     /** Used to receive SSDP Response packet */
     public DatagramPacket responseReceive() throws IOException {
-        byte[] buf = new byte[1024];
+        byte[] buf = new byte[4096];
         DatagramPacket dp = new DatagramPacket(buf, buf.length);
 
         datagramSocket.receive(dp);
@@ -115,7 +115,7 @@ public class SSDPClient {
 
     /** Used to receive SSDP Multicast packet */
     public DatagramPacket multicastReceive() throws IOException {
-        byte[] buf = new byte[1024];
+        byte[] buf = new byte[4096];
         DatagramPacket dp = new DatagramPacket(buf, buf.length);
 
         multicastSocket.receive(dp);
@@ -129,7 +129,8 @@ public class SSDPClient {
 //    }
 
     public boolean isConnected() {
-        return datagramSocket != null && multicastSocket != null && datagramSocket.isConnected() && multicastSocket.isConnected();
+        return datagramSocket != null && !datagramSocket.isClosed()
+            && multicastSocket != null && !multicastSocket.isClosed();
     }
 
     /** Close the socket */

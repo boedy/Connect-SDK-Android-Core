@@ -53,6 +53,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class SSDPDiscoveryProvider implements DiscoveryProvider {
     private static final String SONOS_GROUP_DESCRIPTION = "group_description";
     private static final String SONOS_DEVICE_DESCRIPTION = "device_description";
+    private static final String SONOS_GROUP_NAME_KEY = "gname";
     private static final String UNKNOWN_GROUP_INFO = "N\\A";
 
     Context context;
@@ -66,7 +67,7 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
 
     List<DiscoveryFilter> serviceFilters;
 
-    private SSDPClient ssdpClient;
+    private volatile SSDPClient ssdpClient;
 
     private Timer scanTimer;
 
@@ -75,7 +76,7 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
     private Thread responseThread;
     private Thread notifyThread;
 
-    boolean isRunning = false;
+    volatile boolean isRunning = false;
 
     public SSDPDiscoveryProvider(Context context) {
         this.context = context;
@@ -241,7 +242,7 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
 
     @Override
     public void setFilters(List<DiscoveryFilter> filters) {
-        serviceFilters = filters;
+        serviceFilters = new CopyOnWriteArrayList<DiscoveryFilter>(filters);
     }
 
     @Override
@@ -252,15 +253,17 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
     private Runnable mResponseHandler = new Runnable() {
         @Override
         public void run() {
-            while (ssdpClient != null) {
+            while (isRunning) {
+                SSDPClient client = ssdpClient;
+                if (client == null) break;
                 try {
-                    handleSSDPPacket(new SSDPPacket(ssdpClient.responseReceive()));
+                    handleSSDPPacket(new SSDPPacket(client.responseReceive()));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    if (!isRunning) break;
+                    Log.w(Util.T, "SSDP response receive error", e);
                     break;
                 } catch (RuntimeException e) {
-                    e.printStackTrace();
-                    break;
+                    Log.w(Util.T, "SSDP response handling error, continuing", e);
                 }
             }
         }
@@ -269,15 +272,17 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
     private Runnable mRespNotifyHandler = new Runnable() {
         @Override
         public void run() {
-            while (ssdpClient != null) {
+            while (isRunning) {
+                SSDPClient client = ssdpClient;
+                if (client == null) break;
                 try {
-                    handleSSDPPacket(new SSDPPacket(ssdpClient.multicastReceive()));
+                    handleSSDPPacket(new SSDPPacket(client.multicastReceive()));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    if (!isRunning) break;
+                    Log.w(Util.T, "SSDP notify receive error", e);
                     break;
                 } catch (RuntimeException e) {
-                    e.printStackTrace();
-                    break;
+                    Log.w(Util.T, "SSDP notify handling error, continuing", e);
                 }
             }
         }
@@ -320,6 +325,7 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
 
         if (SSDPClient.BYEBYE.equals(ssdpPacket.getData().get("NTS"))) {
             final ServiceDescription service = foundServices.get(uuid);
+            discoveredServices.remove(uuid);
 
             if (service != null) {
                 foundServices.remove(uuid);
@@ -344,9 +350,22 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
             boolean isUpdated = !isNew && isGroupInfoChanged(existingService.getGroupInfo(), groupInfo);
 
             if (isNew || isUpdated ) {
+                // When group info changes, remove the old device entry first so
+                // DiscoveryManager cleans up the stale key (which includes
+                // friendlyName). Without this, the old entry lingers alongside
+                // the new one because the device key changes with the name.
+                if (isUpdated) {
+                    ServiceDescription oldService = foundServices.remove(uuid);
+                    if (oldService != null) {
+                        notifyListenersOfLostService(oldService);
+                    }
+                }
+
                 foundService = new ServiceDescription();
                 foundService.setUUID(uuid);
                 if(groupInfo != null) foundService.setGroupInfo(groupInfo);
+                String groupName = groupInfoValue(groupInfo, SONOS_GROUP_NAME_KEY);
+                if (groupName != null) foundService.setFriendlyName(groupName);
                 if(householdID != null) foundService.setHouseholdID(householdID);
                 if(websocketURL != null) foundService.setWebsocketURL(websocketURL);
                 foundService.setServiceFilter(serviceFilter);
@@ -398,7 +417,7 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
 
                         if (service != null) {
                             service.setServiceFilter(serviceFilter);
-                            service.setFriendlyName(device.friendlyName);
+                            service.setFriendlyName(resolveFriendlyName(service.getGroupInfo(), device.friendlyName));
                             service.setModelName(device.modelName);
                             service.setModelNumber(device.modelNumber);
                             service.setModelDescription(device.modelDescription);
@@ -518,6 +537,44 @@ public class SSDPDiscoveryProvider implements DiscoveryProvider {
         }
 
         return location.replace(SONOS_GROUP_DESCRIPTION, SONOS_DEVICE_DESCRIPTION);
+    }
+
+    private String resolveFriendlyName(String groupInfo, String fallbackFriendlyName) {
+        String groupName = groupInfoValue(groupInfo, SONOS_GROUP_NAME_KEY);
+
+        if (groupName != null) {
+            return groupName;
+        }
+
+        return fallbackFriendlyName;
+    }
+
+    private String groupInfoValue(String groupInfo, String key) {
+        if (groupInfo == null || key == null) {
+            return null;
+        }
+
+        String[] fields = groupInfo.split(";");
+
+        for (String field : fields) {
+            String trimmedField = field.trim();
+            String prefix = key + "=";
+
+            if (!trimmedField.startsWith(prefix)) {
+                continue;
+            }
+
+            String value = trimmedField.substring(prefix.length()).trim();
+
+            if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1) {
+                value = value.substring(1, value.length() - 1);
+            }
+
+            value = value.trim();
+            return value.length() == 0 ? null : value;
+        }
+
+        return null;
     }
 
     public boolean containsServicesWithFilter(SSDPDevice device, String filter) {

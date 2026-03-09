@@ -104,6 +104,8 @@ public class SSDPDevice {
         SSDPDeviceDescriptionParser parser = new SSDPDeviceDescriptionParser(this);
 
         URLConnection urlConnection = url.openConnection();
+        urlConnection.setConnectTimeout(10000);
+        urlConnection.setReadTimeout(10000);
 
         applicationURL = urlConnection.getHeaderField("Application-URL");
         if (applicationURL != null && !applicationURL.substring(applicationURL.length() - 1).equals("/")) {

@@ -732,6 +732,12 @@ public class ConnectableDevice implements DeviceServiceListener {
 
     /** Gets an estimate of the ConnectableDevice's current friendly name. */
     public String getFriendlyName() {
+        String groupFriendlyName = groupInfoValue(groupInfo, "gname");
+
+        if (groupFriendlyName != null) {
+            return groupFriendlyName;
+        }
+
         return friendlyName;
     }
 
@@ -907,6 +913,34 @@ public class ConnectableDevice implements DeviceServiceListener {
 
     public String toString() {
         return toJSONObject().toString();
+    }
+
+    private String groupInfoValue(String info, String key) {
+        if (info == null || key == null) {
+            return null;
+        }
+
+        String[] fields = info.split(";");
+
+        for (String field : fields) {
+            String trimmedField = field.trim();
+            String prefix = key + "=";
+
+            if (!trimmedField.startsWith(prefix)) {
+                continue;
+            }
+
+            String value = trimmedField.substring(prefix.length()).trim();
+
+            if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1) {
+                value = value.substring(1, value.length() - 1);
+            }
+
+            value = value.trim();
+            return value.length() == 0 ? null : value;
+        }
+
+        return null;
     }
 
     @Override

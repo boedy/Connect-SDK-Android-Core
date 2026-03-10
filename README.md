@@ -5,7 +5,6 @@ The Connect SDK Core contains all of the core classes required for basic operati
 - DLNA
 - LG Netcast
 - LG webOS
-- LG Cast
 - Roku
 
 ## General Information
@@ -13,10 +12,6 @@ For more information about Connect SDK, visit the [main repository](https://gith
 
 ## Setup
 Unless you are doing very specialized work to extend the SDK, you should not need to make direct use of this repository. Instead, clone the [main repository](https://github.com/ConnectSDK/Connect-SDK-Android), which includes this repository as a submodule.
-
-## External libraries
-libgstreamer_android.so is shared object library and links dynamically GStreamer open-source multimedia framework that is licensed under Lesser General Public License.
-You can download and rebuild libgstreamer_android.so at [libgstreamer_android.tar](https://github.com/ConnectSDK/Connect-SDK-Android-Core/blob/master/jniLibs/libgstreamer_android.tar)
 
 ## License
 Copyright (c) 2013-2015 LG Electronics.
